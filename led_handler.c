@@ -5,7 +5,7 @@
 #include <linux/interrupt.h>
 
 MODULE_LICENSE("GPL");
-MODULE_AUTHOR("Javier Albors");
+MODULE_AUTHOR("Javier Albors Sanchez");
 
 static unsigned int gpio_led1 = 16;
 static unsigned int gpio_led2 = 20;
@@ -184,5 +184,5 @@ static irq_handler_t bt4_handler(unsigned int irq, void *device, struct pt_regs 
 }
 
 static void log_message(char *message) {
-	printk(KERN_INFO "%s\n", message);
+	printk("led_handler: %s\n", message);
 }
