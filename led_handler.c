@@ -12,8 +12,8 @@ static unsigned int gpio_led2 = 20;
 
 static unsigned int gpio_bt1 = 13;
 static unsigned int gpio_bt2 = 19;
-static unsigned int gpio_bt3 = 21;
-static unsigned int gpio_bt4 = 26;
+static unsigned int gpio_bt3 = 26;
+static unsigned int gpio_bt4 = 21;
 
 static unsigned int irq_bt1;
 static unsigned int irq_bt2;
@@ -140,9 +140,12 @@ module_init(i_module);
 module_exit(e_module);
 
 static irq_handler_t bt1_handler(unsigned int irq, void *device, struct pt_regs *regs) {
+	char *argv[] = {"/bin/bash", "-c", "/home/pi/led-handler-LKM/B1.sh", NULL};
 	char message[100];
-	
+
 	gpio_set_value(gpio_led1, 1);
+
+	call_usermodehelper(argv[0], argv, NULL, UMH_NO_WAIT);
 	
 	sprintf(message, "Button 1 pressed (pressed %d times) - LED 1: ON", ++bt1_clicks);
 	log_message(message);
@@ -151,10 +154,13 @@ static irq_handler_t bt1_handler(unsigned int irq, void *device, struct pt_regs 
 }
 
 static irq_handler_t bt2_handler(unsigned int irq, void *device, struct pt_regs *regs) {
+	char *argv[] = {"/bin/bash", "-c", "/home/pi/led-handler-LKM/B2.sh", NULL};
 	char message[100];
 	
 	gpio_set_value(gpio_led1, 0);
 
+	call_usermodehelper(argv[0], argv, NULL, UMH_NO_WAIT);
+	
 	sprintf(message, "Button 2 pressed (pressed %d times) - LED 1: OFF", ++bt2_clicks);
 	log_message(message);
 
@@ -162,22 +168,28 @@ static irq_handler_t bt2_handler(unsigned int irq, void *device, struct pt_regs 
 }
 
 static irq_handler_t bt3_handler(unsigned int irq, void *device, struct pt_regs *regs) {
+	char *argv[] = {"/bin/bash", "-c", "/home/pi/led-handler-LKM/B3.sh", NULL};
 	char message[100];
 	
-	gpio_set_value(gpio_led2, 1);
-
-	sprintf(message, "Button 3 pressed (pressed %d times) - LED 2: ON", ++bt3_clicks);
+	gpio_set_value(gpio_led2, 0);
+	
+	call_usermodehelper(argv[0], argv, NULL, UMH_NO_WAIT);
+	
+	sprintf(message, "Button 3 pressed (pressed %d times) - LED 2: OFF", ++bt3_clicks);
 	log_message(message);
 
 	return (irq_handler_t) IRQ_HANDLED;
 }
 
 static irq_handler_t bt4_handler(unsigned int irq, void *device, struct pt_regs *regs) {
+	char *argv[] = {"/bin/bash", "-c", "/home/pi/led-handler-LKM/B4.sh", NULL};
 	char message[100];
 	
-	gpio_set_value(gpio_led2, 0);
+	gpio_set_value(gpio_led2, 1);
+
+	call_usermodehelper(argv[0], argv, NULL, UMH_NO_WAIT);
 	
-	sprintf(message, "Button 4 pressed (pressed %d times) - LED 2: OFF", ++bt4_clicks);
+	sprintf(message, "Button 4 pressed (pressed %d times) - LED 2: ON", ++bt4_clicks);
 	log_message(message);
 
 	return (irq_handler_t) IRQ_HANDLED;
