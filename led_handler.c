@@ -34,12 +34,12 @@ static void log_message(char *message);
 static int __init i_module(void) {
 
 	int err = 0;
-	
+
 	log_message("Starting module");
 
-	if (!gpio_is_valid(gpio_led1) || !gpio_is_valid(gpio_led2) 
+	if (!gpio_is_valid(gpio_led1) || !gpio_is_valid(gpio_led2)
 	|| !gpio_is_valid(gpio_bt1) || !gpio_is_valid(gpio_bt2) || !gpio_is_valid(gpio_bt3) || !gpio_is_valid(gpio_bt4)) {
-		
+
 		log_message("ERROR - Invalid GPIO(s)");
 		return -ENODEV;
 	}
@@ -47,7 +47,7 @@ static int __init i_module(void) {
 	gpio_request(gpio_led1, "sysfs");
 	gpio_direction_output(gpio_led1, 0);
 	gpio_export(gpio_led1, false);
-	
+
 	gpio_request(gpio_led2, "sysfs");
 	gpio_direction_output(gpio_led2, 0);
 	gpio_export(gpio_led2, false);
@@ -78,13 +78,13 @@ static int __init i_module(void) {
 	irq_bt2 = gpio_to_irq(gpio_bt2);
 	irq_bt3 = gpio_to_irq(gpio_bt3);
 	irq_bt4 = gpio_to_irq(gpio_bt4);
-	
+
 	err = request_irq(irq_bt1, (irq_handler_t) bt1_handler, IRQF_TRIGGER_RISING, "bt1_handler", NULL);
-	if (err) return err; 
+	if (err) return err;
 	err = request_irq(irq_bt2, (irq_handler_t) bt2_handler, IRQF_TRIGGER_RISING, "bt2_handler", NULL);
-	if (err) return err; 
+	if (err) return err;
 	err = request_irq(irq_bt3, (irq_handler_t) bt3_handler, IRQF_TRIGGER_RISING, "bt3_handler", NULL);
-	if (err) return err; 
+	if (err) return err;
 	err = request_irq(irq_bt4, (irq_handler_t) bt4_handler, IRQF_TRIGGER_RISING, "bt4_handler", NULL);
 
 	if(!err) log_message("IRQ handler requests OK");
@@ -109,10 +109,9 @@ static void __exit e_module(void) {
 	sprintf(message, "Button 4 was pressed %d times", bt4_clicks);
 	log_message(message);
 
-
 	gpio_set_value(gpio_led1, 0);
 	gpio_set_value(gpio_led2, 0);
-	
+
 	gpio_unexport(gpio_led1);
 	gpio_unexport(gpio_led2);
 	gpio_free(gpio_led1);
@@ -146,7 +145,7 @@ static irq_handler_t bt1_handler(unsigned int irq, void *device, struct pt_regs 
 	gpio_set_value(gpio_led1, 1);
 
 	call_usermodehelper(argv[0], argv, NULL, UMH_NO_WAIT);
-	
+
 	sprintf(message, "Button 1 pressed (pressed %d times) - LED 1: ON", ++bt1_clicks);
 	log_message(message);
 
@@ -156,11 +155,11 @@ static irq_handler_t bt1_handler(unsigned int irq, void *device, struct pt_regs 
 static irq_handler_t bt2_handler(unsigned int irq, void *device, struct pt_regs *regs) {
 	char *argv[] = {"/bin/bash", "-c", "/home/pi/led-handler-LKM/B2.sh", NULL};
 	char message[100];
-	
+
 	gpio_set_value(gpio_led1, 0);
 
 	call_usermodehelper(argv[0], argv, NULL, UMH_NO_WAIT);
-	
+
 	sprintf(message, "Button 2 pressed (pressed %d times) - LED 1: OFF", ++bt2_clicks);
 	log_message(message);
 
@@ -170,11 +169,11 @@ static irq_handler_t bt2_handler(unsigned int irq, void *device, struct pt_regs 
 static irq_handler_t bt3_handler(unsigned int irq, void *device, struct pt_regs *regs) {
 	char *argv[] = {"/bin/bash", "-c", "/home/pi/led-handler-LKM/B3.sh", NULL};
 	char message[100];
-	
+
 	gpio_set_value(gpio_led2, 0);
-	
+
 	call_usermodehelper(argv[0], argv, NULL, UMH_NO_WAIT);
-	
+
 	sprintf(message, "Button 3 pressed (pressed %d times) - LED 2: OFF", ++bt3_clicks);
 	log_message(message);
 
@@ -184,11 +183,11 @@ static irq_handler_t bt3_handler(unsigned int irq, void *device, struct pt_regs 
 static irq_handler_t bt4_handler(unsigned int irq, void *device, struct pt_regs *regs) {
 	char *argv[] = {"/bin/bash", "-c", "/home/pi/led-handler-LKM/B4.sh", NULL};
 	char message[100];
-	
+
 	gpio_set_value(gpio_led2, 1);
 
 	call_usermodehelper(argv[0], argv, NULL, UMH_NO_WAIT);
-	
+
 	sprintf(message, "Button 4 pressed (pressed %d times) - LED 2: ON", ++bt4_clicks);
 	log_message(message);
 
